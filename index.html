@@ -3,26 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f4f6f8">
+  <meta name="theme-color" content="#163d2b">
   <title>Beam Designer</title>
   <style>
     :root {
       color-scheme: light;
-      --ink: #172b3a;
-      --muted: #647583;
-      --line: #dce3e8;
-      --paper: #ffffff;
-      --canvas: #f4f6f8;
-      --blue: #176b87;
-      --blue-dark: #10546d;
-      --blue-pale: #e8f4f7;
-      --gold: #a76b13;
-      --gold-pale: #fff6e6;
-      --green: #23734e;
-      --green-pale: #e9f5ee;
-      --red: #a23d3d;
-      --red-pale: #fff0ee;
-      --shadow: 0 10px 28px rgba(20, 42, 56, 0.06);
+      --ink: #1d3024;
+      --muted: #68776a;
+      --line: #dedacb;
+      --paper: #fffdf6;
+      --canvas: #f5f2e7;
+      --accent: #246143;
+      --accent-dark: #194b32;
+      --accent-pale: #e8f1e7;
+      --gold: #a47719;
+      --gold-pale: #fbf2da;
+      --green: #28714b;
+      --green-pale: #e8f3e9;
+      --red: #a23d48;
+      --red-pale: #f9e9e8;
+      --pine: #173d2b;
+      --pine-dark: #102d20;
+      --cranberry: #a23d48;
+      --shadow: 0 10px 28px rgba(27, 55, 37, 0.08);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       font-synthesis: none;
       text-rendering: optimizeLegibility;
@@ -32,7 +35,12 @@
 
     body {
       margin: 0;
-      background: var(--canvas);
+      background-color: var(--canvas);
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, .9) 1px, transparent 1.6px),
+        radial-gradient(circle, rgba(162, 61, 72, .07) 1px, transparent 1.7px);
+      background-size: 56px 56px, 88px 88px;
+      background-position: 0 0, 24px 30px;
       color: var(--ink);
       line-height: 1.5;
     }
@@ -41,9 +49,10 @@
     button { cursor: pointer; }
 
     .topbar {
-      background: #102b3a;
+      background: linear-gradient(110deg, var(--pine-dark), #20573a);
       color: #fff;
       padding: 18px max(24px, calc((100% - 1440px) / 2));
+      border-bottom: 4px solid var(--cranberry);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -58,14 +67,14 @@
       place-items: center;
       border: 1px solid rgba(255,255,255,.3);
       border-radius: 10px;
-      color: #9bd4e4;
+      color: #f0d48a;
       font-weight: 800;
       font-size: 19px;
     }
     .brand h1 { margin: 0; font-size: 17px; line-height: 1.2; letter-spacing: -.02em; }
-    .brand p { margin: 3px 0 0; color: #bdcbd2; font-size: 12px; }
+    .brand p { margin: 3px 0 0; color: #d6e3d8; font-size: 12px; }
     .topbar-tag {
-      color: #d6e5eb;
+      color: #f2ead3;
       font-size: 12px;
       border: 1px solid rgba(255,255,255,.22);
       border-radius: 999px;
@@ -88,7 +97,7 @@
     }
     .eyebrow {
       margin: 0 0 5px;
-      color: var(--blue);
+      color: var(--accent);
       text-transform: uppercase;
       font-size: 11px;
       letter-spacing: .12em;
@@ -136,7 +145,7 @@
     .field label, .field-label {
       display: block;
       margin: 0 0 5px;
-      color: #415564;
+      color: #405447;
       font-size: 11px;
       font-weight: 700;
     }
@@ -145,18 +154,18 @@
       min-width: 0;
       height: 38px;
       padding: 7px 10px;
-      border: 1px solid #cbd6dd;
+      border: 1px solid #d5d4c7;
       border-radius: 7px;
-      background: #fff;
+      background: #fffef9;
       color: var(--ink);
       outline: none;
       font-size: 13px;
     }
     .field input:focus, .field select:focus, .load-field input:focus {
-      border-color: var(--blue);
+      border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(23,107,135,.13);
     }
-    .field input::placeholder, .load-field input::placeholder { color: #9aa8b1; }
+    .field input::placeholder, .load-field input::placeholder { color: #98a196; }
     .unit-input { position: relative; }
     .unit-input input { padding-right: 54px; }
     .unit {
@@ -173,16 +182,16 @@
       display: flex;
       align-items: flex-start;
       gap: 9px;
-      color: #425765;
+      color: #405447;
       font-size: 12px;
       line-height: 1.4;
     }
-    .check-row input { margin: 2px 0 0; accent-color: var(--blue); }
+    .check-row input { margin: 2px 0 0; accent-color: var(--accent); }
     .subpanel {
       padding: 12px;
       border: 1px solid var(--line);
       border-radius: 9px;
-      background: #fbfcfd;
+      background: #faf9f2;
     }
     .field-group[hidden] { display: none; }
 
@@ -191,7 +200,7 @@
       padding: 10px;
       border: 1px solid var(--line);
       border-radius: 9px;
-      background: #fbfcfd;
+      background: #faf9f2;
     }
     .load-row-top {
       display: flex;
@@ -199,7 +208,7 @@
       justify-content: space-between;
       margin-bottom: 8px;
     }
-    .load-row-title { font-size: 11px; font-weight: 750; color: #344a59; }
+    .load-row-title { font-size: 11px; font-weight: 750; color: #344a3b; }
     .load-row-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .load-field label {
       display: block;
@@ -212,16 +221,16 @@
     .icon-button, .text-button {
       border: 0;
       background: transparent;
-      color: var(--blue);
+      color: var(--accent);
       font-size: 11px;
       font-weight: 750;
     }
-    .icon-button { color: #8a4c4c; padding: 3px 5px; }
+    .icon-button { color: var(--cranberry); padding: 3px 5px; }
     .load-actions { display: flex; gap: 14px; margin-top: 9px; }
     .empty-loads {
       margin: 0;
       padding: 12px;
-      border: 1px dashed #cbd6dd;
+      border: 1px dashed #d5d4c7;
       border-radius: 8px;
       color: var(--muted);
       text-align: center;
@@ -232,7 +241,7 @@
     .primary-button {
       border: 0;
       border-radius: 8px;
-      background: var(--blue);
+      background: var(--accent);
       color: #fff;
       min-height: 42px;
       padding: 10px 16px;
@@ -240,13 +249,13 @@
       font-weight: 750;
       transition: background .15s, transform .15s;
     }
-    .primary-button:hover { background: var(--blue-dark); }
+    .primary-button:hover { background: var(--accent-dark); }
     .primary-button:active { transform: translateY(1px); }
     .secondary-button {
-      border: 1px solid #cbd6dd;
+      border: 1px solid #d5d4c7;
       border-radius: 8px;
-      background: #fff;
-      color: #425765;
+      background: #fffef9;
+      color: #405447;
       min-height: 42px;
       padding: 9px 13px;
       font-size: 12px;
@@ -257,10 +266,10 @@
       display: none;
       margin: 14px 0 0;
       padding: 10px 12px;
-      border: 1px solid #ebc8c4;
+      border: 1px solid #e6c6bd;
       border-radius: 8px;
       background: var(--red-pale);
-      color: #833a35;
+      color: #8c373a;
       font-size: 12px;
     }
     .error-message.visible { display: block; }
@@ -268,13 +277,13 @@
     .results { min-width: 0; display: grid; gap: 14px; }
     .notice {
       padding: 12px 15px;
-      border: 1px solid #ead6ac;
+      border: 1px solid #e8d49f;
       border-radius: 10px;
       background: var(--gold-pale);
-      color: #72531c;
+      color: #71551d;
       font-size: 12px;
     }
-    .notice strong { color: #5f4414; }
+    .notice strong { color: #594319; }
     .result-card { padding: 17px 19px; }
     .card-heading {
       display: flex;
@@ -289,8 +298,8 @@
       display: inline-flex;
       align-items: center;
       border-radius: 999px;
-      background: var(--blue-pale);
-      color: var(--blue-dark);
+      background: var(--accent-pale);
+      color: var(--accent-dark);
       padding: 4px 9px;
       font-size: 10px;
       font-weight: 750;
@@ -300,8 +309,8 @@
     .beam-svg text, .plot-svg text { font-family: inherit; }
     .beam-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 7px; color: var(--muted); font-size: 10px; }
     .legend-mark { display: inline-flex; align-items: center; gap: 5px; }
-    .legend-line { width: 15px; height: 2px; background: #334d5d; }
-    .legend-load { width: 15px; height: 2px; background: #a94e16; }
+    .legend-line { width: 15px; height: 2px; background: var(--pine); }
+    .legend-load { width: 15px; height: 2px; background: var(--cranberry); }
 
     .metric-grid {
       display: grid;
@@ -312,7 +321,7 @@
       padding: 12px;
       border: 1px solid var(--line);
       border-radius: 9px;
-      background: #fff;
+      background: #fffef9;
       min-width: 0;
     }
     .metric-label { color: var(--muted); font-size: 10px; font-weight: 700; }
@@ -339,31 +348,37 @@
     }
     .status.pass { background: var(--green-pale); color: var(--green); }
     .status.fail { background: var(--red-pale); color: var(--red); }
-    .status.na { background: #edf1f3; color: #5e6d76; }
+    .status.na { background: #efeee6; color: #626c60; }
     .result-detail {
       border-top: 1px solid var(--line);
       margin-top: 13px;
       padding-top: 11px;
-      color: #526674;
+      color: #526453;
       font-size: 11px;
       line-height: 1.6;
     }
     .diagram-stack { display: grid; gap: 16px; }
     .diagram-item + .diagram-item { border-top: 1px solid var(--line); padding-top: 13px; }
-    .diagram-title { margin: 0 0 2px; color: #334a59; font-size: 11px; font-weight: 750; }
+    .diagram-title { margin: 0 0 2px; color: #344a38; font-size: 11px; font-weight: 750; }
     .diagram-subtitle { margin: 0 0 4px; color: var(--muted); font-size: 10px; }
     .property-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
     .property {
       padding: 8px 10px;
       border-radius: 7px;
-      background: #f5f8f9;
+      background: #f4f3eb;
       min-width: 0;
     }
     .property-label { color: var(--muted); font-size: 9px; }
     .property-value { margin-top: 2px; font-size: 11px; font-weight: 700; overflow-wrap: anywhere; }
     .caveat-list { margin: 8px 0 0; padding-left: 17px; color: var(--muted); font-size: 10px; }
     .caveat-list li + li { margin-top: 3px; }
-    .footer-note { color: #71818b; text-align: center; font-size: 10px; padding: 4px 0; }
+    .footer-note { color: #718071; text-align: center; font-size: 10px; padding: 4px 0; }
+    .section-svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .section-svg text { font-family: inherit; }
+    .section-dimension { fill: var(--pine-dark); font-size: 12px; font-weight: 700; }
+    .section-outline { fill: #2f704a; stroke: var(--pine-dark); stroke-width: 2; }
+    .section-dimension-line { fill: none; stroke: var(--cranberry); stroke-width: 1.4; }
+    .section-extension-line { stroke: #8a9a83; stroke-width: 1; }
 
     @media (max-width: 980px) {
       .workspace { grid-template-columns: minmax(290px, 350px) minmax(0, 1fr); gap: 14px; }
@@ -396,13 +411,13 @@
         <p>Elastic beam analysis · Imperial units</p>
       </div>
     </div>
-    <div class="topbar-tag">Educational screening tool</div>
+    <div class="topbar-tag">Holiday edition · educational tool</div>
   </header>
 
   <main class="page">
     <section class="intro" aria-labelledby="page-title">
       <div>
-        <p class="eyebrow">Beam analysis workspace</p>
+        <p class="eyebrow">Holiday beam analysis</p>
         <h2 id="page-title">Model your beam</h2>
         <p>Set the supports, member properties, and loads to view reactions and diagrams.</p>
       </div>
@@ -467,8 +482,25 @@
                   <option>W24x55</option>
                   <option>W24x76</option>
                 </select>
-                <p class="helper" id="steel-section-help">Curated common sizes. Selecting a shape does not load its table properties; enter verified values and source below.</p>
+                <p class="helper" id="steel-section-help">Selecting a shape does not load table properties; enter verified dimensions, section properties, and source.</p>
               </div>
+              <div class="field">
+                <label for="steel-depth">Overall depth, d</label>
+                <div class="unit-input"><input id="steel-depth" type="number" min="0" step="any" value="12.22"><span class="unit">in</span></div>
+              </div>
+              <div class="field">
+                <label for="steel-flange-width">Flange width, bf</label>
+                <div class="unit-input"><input id="steel-flange-width" type="number" min="0" step="any" value="6.49"><span class="unit">in</span></div>
+              </div>
+              <div class="field">
+                <label for="steel-web-thickness">Web thickness, tw</label>
+                <div class="unit-input"><input id="steel-web-thickness" type="number" min="0" step="any" value="0.23"><span class="unit">in</span></div>
+              </div>
+              <div class="field">
+                <label for="steel-flange-thickness">Flange thickness, tf</label>
+                <div class="unit-input"><input id="steel-flange-thickness" type="number" min="0" step="any" value="0.38"><span class="unit">in</span></div>
+              </div>
+              <p class="helper field full">Enter verified dimensions for the selected shape. The section sketch uses one scale for both axes.</p>
               <div class="field">
                 <label for="steel-weight">Weight per length</label>
                 <div class="unit-input"><input id="steel-weight" type="number" min="0" step="any" value="26"><span class="unit">lb/ft</span></div>
@@ -604,6 +636,15 @@
             <span class="legend-mark"><span class="legend-line"></span>Beam</span>
             <span class="legend-mark"><span class="legend-load"></span>Applied load</span>
           </div>
+        </article>
+
+        <article class="card result-card">
+          <div class="card-heading">
+            <div><h3>Member cross-section</h3><p>Proportional drawing with entered dimensions</p></div>
+            <span class="card-chip" id="section-chip">W12x26</span>
+          </div>
+          <div id="section-sketch" aria-label="Selected member cross-section and dimensions"></div>
+          <p class="helper" id="section-sketch-status" hidden>Enter valid member dimensions and analyze to show the cross-section to scale.</p>
         </article>
 
         <article class="card result-card">
@@ -844,9 +885,17 @@
       const material = $("material").value;
       if (material === "steel") {
         const allowable = readPositive("steel-allowable", "Allowable bending stress", true);
+        const depth = readPositive("steel-depth", "Overall depth d", false);
+        const flangeWidth = readPositive("steel-flange-width", "Flange width bf", false);
+        const webThickness = readPositive("steel-web-thickness", "Web thickness tw", false);
+        const flangeThickness = readPositive("steel-flange-thickness", "Flange thickness tf", false);
+        if (2 * flangeThickness >= depth || webThickness >= flangeWidth) {
+          throw new Error("W-shape dimensions must satisfy 2 × tf < d and tw < bf.");
+        }
         return {
           material,
           name: readText("steel-section", "Section identifier", false),
+          geometry: { type: "wide-flange", depth, flangeWidth, webThickness, flangeThickness },
           weightLbFt: readNonnegative("steel-weight", "Steel weight per length"),
           E: readPositive("steel-e", "Steel elastic modulus", false),
           I: readPositive("steel-ix", "Steel Ix", false),
@@ -857,6 +906,7 @@
           details: [
             ["Material", "Steel W-shape"],
             ["Section", readText("steel-section", "Section identifier", false)],
+            ["Cross-section d × bf × tw × tf", `${format(depth)} × ${format(flangeWidth)} × ${format(webThickness)} × ${format(flangeThickness)} in`],
             ["E", `${format(readPositive("steel-e", "Steel elastic modulus", false))} ksi`],
             ["Ix", `${format(readPositive("steel-ix", "Steel Ix", false))} in⁴`],
             ["Sx", `${format(readPositive("steel-sx", "Steel Sx", false))} in³`],
@@ -893,6 +943,7 @@
       return {
         material,
         name: grade,
+        geometry: { type: "rectangle", width: b, depth: d },
         weightLbFt: readNonnegative("lumber-weight", "Lumber weight per length"),
         E, I, S, Fb, Fv, allowable, factorProduct,
         source,
@@ -1018,7 +1069,7 @@
     }
 
     function svgText(x, y, text, anchor, size, fill) {
-      return `<text x="${x}" y="${y}" text-anchor="${anchor || "start"}" font-size="${size || 10}" fill="${fill || "#667985"}">${text}</text>`;
+      return `<text x="${x}" y="${y}" text-anchor="${anchor || "start"}" font-size="${size || 10}" fill="${fill || "#68776a"}">${text}</text>`;
     }
 
     function drawBeam(model) {
@@ -1030,16 +1081,16 @@
       const span = model.L;
       const xPosition = (x) => left + (right - left) * x / span;
       let svg = `<svg class="beam-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Beam with supports and applied loads">`;
-      svg += `<defs><marker id="beam-arrow" viewBox="0 0 10 10" markerWidth="6" markerHeight="6" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 z" fill="#a94e16"/></marker></defs>`;
-      svg += `<line x1="${left}" y1="${beamY}" x2="${right}" y2="${beamY}" stroke="#28485b" stroke-width="7" stroke-linecap="round"/>`;
+      svg += `<defs><marker id="beam-arrow" viewBox="0 0 10 10" markerWidth="6" markerHeight="6" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 z" fill="var(--cranberry)"/></marker></defs>`;
+      svg += `<line x1="${left}" y1="${beamY}" x2="${right}" y2="${beamY}" stroke="var(--pine)" stroke-width="7" stroke-linecap="round"/>`;
       if (model.support === "simple") {
         for (const x of [left, right]) {
-          svg += `<path d="M${x} ${beamY + 5} l-13 18 h26 z" fill="#edf3f5" stroke="#607986" stroke-width="1.5"/>`;
-          svg += `<line x1="${x - 18}" y1="${beamY + 25}" x2="${x + 18}" y2="${beamY + 25}" stroke="#78909b" stroke-width="1.5"/>`;
+          svg += `<path d="M${x} ${beamY + 5} l-13 18 h26 z" fill="#f3f1e7" stroke="#71816f" stroke-width="1.5"/>`;
+          svg += `<line x1="${x - 18}" y1="${beamY + 25}" x2="${x + 18}" y2="${beamY + 25}" stroke="#71816f" stroke-width="1.5"/>`;
         }
       } else {
-        svg += `<line x1="${left - 10}" y1="49" x2="${left - 10}" y2="125" stroke="#607986" stroke-width="5"/>`;
-        for (let y = 52; y < 123; y += 10) svg += `<line x1="${left - 10}" y1="${y}" x2="${left - 20}" y2="${y + 8}" stroke="#9aabb3" stroke-width="1"/>`;
+        svg += `<line x1="${left - 10}" y1="49" x2="${left - 10}" y2="125" stroke="#71816f" stroke-width="5"/>`;
+        for (let y = 52; y < 123; y += 10) svg += `<line x1="${left - 10}" y1="${y}" x2="${left - 20}" y2="${y + 8}" stroke="#9aa596" stroke-width="1"/>`;
       }
       const allLoads = model.distributed.length + model.points.length;
       if (!allLoads) svg += svgText((left + right) / 2, 53, "No applied loads", "middle", 11);
@@ -1049,14 +1100,14 @@
         const sign = load.q >= 0 ? 1 : -1;
         const startY = sign > 0 ? 35 : 132;
         const endY = sign > 0 ? beamY - 5 : beamY + 5;
-        svg += `<path d="M${x1} ${startY} L${x2} ${startY} L${x2} ${endY} L${x1} ${endY} Z" fill="#fbe8d5" stroke="none"/>`;
-        svg += `<line x1="${x1}" y1="${startY}" x2="${x2}" y2="${startY}" stroke="#a94e16" stroke-width="1.5"/>`;
+        svg += `<path d="M${x1} ${startY} L${x2} ${startY} L${x2} ${endY} L${x1} ${endY} Z" fill="#f5e4d8" stroke="none"/>`;
+        svg += `<line x1="${x1}" y1="${startY}" x2="${x2}" y2="${startY}" stroke="var(--cranberry)" stroke-width="1.5"/>`;
         const count = 5;
         for (let index = 0; index <= count; index++) {
           const x = x1 + (x2 - x1) * index / count;
-          svg += `<line x1="${x}" y1="${startY + sign * 3}" x2="${x}" y2="${endY}" stroke="#a94e16" stroke-width="1.8" marker-end="url(#beam-arrow)"/>`;
+          svg += `<line x1="${x}" y1="${startY + sign * 3}" x2="${x}" y2="${endY}" stroke="var(--cranberry)" stroke-width="1.8" marker-end="url(#beam-arrow)"/>`;
         }
-        svg += svgText((x1 + x2) / 2, sign > 0 ? 25 : 145, `${load.label}: ${format(load.q * 12)} kip/ft`, "middle", 9, "#a95c20");
+        svg += svgText((x1 + x2) / 2, sign > 0 ? 25 : 145, `${load.label}: ${format(load.q * 12)} kip/ft`, "middle", 9, "var(--cranberry)");
       }
       for (const load of model.points) {
         const x = xPosition(load.a);
@@ -1064,15 +1115,81 @@
         const startY = sign > 0 ? 39 : 132;
         const endY = sign > 0 ? beamY - 5 : beamY + 5;
         const marker = sign > 0 ? ' marker-end="url(#beam-arrow)"' : "";
-        svg += `<line x1="${x}" y1="${startY}" x2="${x}" y2="${endY}" stroke="#c26b24" stroke-width="2"${marker}/>`;
-        if (sign < 0) svg += `<path d="M${x - 4} ${endY - 7} L${x} ${endY} L${x + 4} ${endY - 7}" fill="none" stroke="#c26b24" stroke-width="2"/>`;
-        svg += svgText(x, sign > 0 ? 29 : 145, `${load.label}: ${format(load.p)} kip`, "middle", 9, "#a95c20");
+        svg += `<line x1="${x}" y1="${startY}" x2="${x}" y2="${endY}" stroke="var(--cranberry)" stroke-width="2"${marker}/>`;
+        if (sign < 0) svg += `<path d="M${x - 4} ${endY - 7} L${x} ${endY} L${x + 4} ${endY - 7}" fill="none" stroke="var(--cranberry)" stroke-width="2"/>`;
+        svg += svgText(x, sign > 0 ? 29 : 145, `${load.label}: ${format(load.p)} kip`, "middle", 9, "var(--cranberry)");
       }
       svg += svgText(left, 142, "x = 0", "start", 9);
       svg += svgText(right, 142, `L = ${format(model.spanFt)} ft`, "end", 9);
       svg += `</svg>`;
       $("beam-sketch").innerHTML = svg;
       $("beam-caption").textContent = `${model.support === "simple" ? "Simply supported" : "Cantilever"} · ${format(model.spanFt)} ft span · ${model.member.name}`;
+    }
+
+    function drawCrossSection(model) {
+      const geometry = model.member.geometry;
+      const isWideFlange = geometry.type === "wide-flange";
+      const widthIn = isWideFlange ? geometry.flangeWidth : geometry.width;
+      const depthIn = geometry.depth;
+      const largestDimension = Math.max(widthIn, depthIn);
+      const toPixels = (dimension) => 220 * (dimension / largestDimension);
+      const sectionWidth = toPixels(widthIn);
+      const sectionHeight = toPixels(depthIn);
+      const left = (760 - sectionWidth) / 2;
+      const right = left + sectionWidth;
+      const top = (360 - sectionHeight) / 2;
+      const bottom = top + sectionHeight;
+      const center = (left + right) / 2;
+      const depthX = left - 38;
+      const widthY = top - 26;
+      const dimensionText = (x, y, text, anchor) =>
+        `<text x="${x}" y="${y}" text-anchor="${anchor || "middle"}" class="section-dimension">${escapeHTML(text)}</text>`;
+      let svg = `<svg class="section-svg" viewBox="0 0 760 360" role="img" aria-label="${escapeHTML(model.member.name)} cross-section, drawn to scale">`;
+      svg += `<defs>
+        <marker id="section-dimension-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M10 0 L0 5 L10 10 z" fill="var(--cranberry)"/>
+        </marker>
+      </defs>`;
+
+      if (isWideFlange) {
+        const flangeThickness = toPixels(geometry.flangeThickness);
+        const webThickness = toPixels(geometry.webThickness);
+        const webLeft = center - webThickness / 2;
+        const webRight = center + webThickness / 2;
+        svg += `<path class="section-outline" d="M${left} ${top} H${right} V${top + flangeThickness} H${webRight} V${bottom - flangeThickness} H${right} V${bottom} H${left} V${bottom - flangeThickness} H${webLeft} V${top + flangeThickness} H${left} Z"/>`;
+        const flangeX = right + 22;
+        const flangeMid = top + flangeThickness / 2;
+        const webY = (top + bottom) / 2;
+        svg += `<line class="section-extension-line" x1="${left}" y1="${top}" x2="${depthX + 4}" y2="${top}"/>`;
+        svg += `<line class="section-extension-line" x1="${left}" y1="${bottom}" x2="${depthX + 4}" y2="${bottom}"/>`;
+        svg += `<line class="section-dimension-line" x1="${depthX}" y1="${top}" x2="${depthX}" y2="${bottom}" marker-start="url(#section-dimension-arrow)" marker-end="url(#section-dimension-arrow)"/>`;
+        svg += dimensionText(depthX - 8, (top + bottom) / 2 + 4, `d = ${format(depthIn)} in`, "end");
+        svg += `<line class="section-extension-line" x1="${left}" y1="${top}" x2="${left}" y2="${widthY + 4}"/>`;
+        svg += `<line class="section-extension-line" x1="${right}" y1="${top}" x2="${right}" y2="${widthY + 4}"/>`;
+        svg += `<line class="section-dimension-line" x1="${left}" y1="${widthY}" x2="${right}" y2="${widthY}" marker-start="url(#section-dimension-arrow)" marker-end="url(#section-dimension-arrow)"/>`;
+        svg += dimensionText(center, widthY - 8, `bf = ${format(widthIn)} in`);
+        svg += `<line class="section-extension-line" x1="${right}" y1="${top}" x2="${flangeX}" y2="${top}"/>`;
+        svg += `<line class="section-extension-line" x1="${right}" y1="${top + flangeThickness}" x2="${flangeX}" y2="${top + flangeThickness}"/>`;
+        svg += `<line class="section-dimension-line" x1="${flangeX}" y1="${top}" x2="${flangeX}" y2="${top + flangeThickness}" marker-start="url(#section-dimension-arrow)" marker-end="url(#section-dimension-arrow)"/>`;
+        svg += dimensionText(flangeX + 10, flangeMid + 4, `tf = ${format(geometry.flangeThickness)} in`, "start");
+        svg += `<line class="section-dimension-line" x1="${webLeft}" y1="${webY}" x2="${webRight}" y2="${webY}" marker-start="url(#section-dimension-arrow)" marker-end="url(#section-dimension-arrow)"/>`;
+        svg += dimensionText(right + 10, webY - 8, `tw = ${format(geometry.webThickness)} in`, "start");
+      } else {
+        svg += `<rect class="section-outline" x="${left}" y="${top}" width="${sectionWidth}" height="${sectionHeight}"/>`;
+        svg += `<line class="section-extension-line" x1="${left}" y1="${top}" x2="${left}" y2="${widthY + 4}"/>`;
+        svg += `<line class="section-extension-line" x1="${right}" y1="${top}" x2="${right}" y2="${widthY + 4}"/>`;
+        svg += `<line class="section-dimension-line" x1="${left}" y1="${widthY}" x2="${right}" y2="${widthY}" marker-start="url(#section-dimension-arrow)" marker-end="url(#section-dimension-arrow)"/>`;
+        svg += dimensionText(center, widthY - 8, `b = ${format(widthIn)} in`);
+        svg += `<line class="section-extension-line" x1="${left}" y1="${top}" x2="${depthX + 4}" y2="${top}"/>`;
+        svg += `<line class="section-extension-line" x1="${left}" y1="${bottom}" x2="${depthX + 4}" y2="${bottom}"/>`;
+        svg += `<line class="section-dimension-line" x1="${depthX}" y1="${top}" x2="${depthX}" y2="${bottom}" marker-start="url(#section-dimension-arrow)" marker-end="url(#section-dimension-arrow)"/>`;
+        svg += dimensionText(depthX - 8, (top + bottom) / 2 + 4, `d = ${format(depthIn)} in`, "end");
+      }
+
+      svg += `</svg>`;
+      $("section-sketch").innerHTML = svg;
+      $("section-chip").textContent = model.member.name;
+      $("section-sketch-status").hidden = true;
     }
 
     function drawPlot(targetId, model, key, label, conversion) {
@@ -1093,11 +1210,12 @@
       const x = (distance) => left + (right - left) * distance / model.L;
       const path = model.samples.map((sample, index) => `${index ? "L" : "M"}${x(sample.x).toFixed(2)},${y(sample[key] * conversion).toFixed(2)}`).join(" ");
       const zeroY = y(0);
+      const plotColor = key === "V" ? "var(--pine)" : key === "M" ? "var(--cranberry)" : "var(--gold)";
       let svg = `<svg class="plot-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${label} diagram">`;
-      svg += `<line x1="${left}" y1="${top}" x2="${left}" y2="${bottom}" stroke="#cdd7dc"/>`;
-      svg += `<line x1="${left}" y1="${zeroY}" x2="${right}" y2="${zeroY}" stroke="#aab9c1" stroke-dasharray="4 4"/>`;
-      svg += `<line x1="${left}" y1="${bottom}" x2="${right}" y2="${bottom}" stroke="#cdd7dc"/>`;
-      svg += `<path d="${path}" fill="none" stroke="#176b87" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+      svg += `<line x1="${left}" y1="${top}" x2="${left}" y2="${bottom}" stroke="#d3d5c9"/>`;
+      svg += `<line x1="${left}" y1="${zeroY}" x2="${right}" y2="${zeroY}" stroke="#aeb7a8" stroke-dasharray="4 4"/>`;
+      svg += `<line x1="${left}" y1="${bottom}" x2="${right}" y2="${bottom}" stroke="#d3d5c9"/>`;
+      svg += `<path d="${path}" fill="none" stroke="${plotColor}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
       svg += svgText(left - 8, top + 3, format(max - pad, 2), "end", 9);
       svg += svgText(left - 8, bottom + 2, format(min + pad, 2), "end", 9);
       svg += svgText(left, bottom + 19, "0", "middle", 9);
@@ -1165,6 +1283,7 @@
         ? (deflectionPass ? "Deflection pass · bending unchecked" : "Deflection fail · bending unchecked")
         : (deflectionPass && stress <= bending ? "Screening checks pass" : "Review checks");
       drawBeam(model);
+      drawCrossSection(model);
       drawPlot("shear-plot", model, "V", "Shear force", 1);
       drawPlot("moment-plot", model, "M", "Bending moment", 1 / 12);
       drawPlot("deflection-plot", model, "y", "Deflection", 1);
@@ -1185,17 +1304,27 @@
       const steelSelected = $("material").value === "steel";
       $("steel-fields").hidden = !steelSelected;
       $("lumber-fields").hidden = steelSelected;
+      $("section-sketch").replaceChildren();
+      $("section-chip").textContent = steelSelected ? $("steel-section").value : "Rectangular lumber";
+      $("section-sketch-status").hidden = false;
     }
 
     $("material").addEventListener("change", setMaterialFields);
     $("steel-section").addEventListener("change", () => {
+      $("section-sketch").replaceChildren();
+      $("section-chip").textContent = $("steel-section").value;
+      $("section-sketch-status").hidden = false;
+      $("steel-depth").value = "";
+      $("steel-flange-width").value = "";
+      $("steel-web-thickness").value = "";
+      $("steel-flange-thickness").value = "";
       $("steel-weight").value = "";
       $("steel-ix").value = "";
       $("steel-sx").value = "";
       $("steel-allowable").value = "";
       $("steel-source").value = "";
       $("steel-source").placeholder = "Enter the verified property source";
-      $("steel-section-help").textContent = "Section changed. Enter verified weight, Ix, Sx, allowable stress (if used), and source before analyzing.";
+      $("steel-section-help").textContent = "Section changed. Enter verified dimensions, weight, Ix, Sx, allowable stress (if used), and source before analyzing.";
     });
     $("beam-form").addEventListener("submit", analyze);
     $("add-point").addEventListener("click", () => makeLoadRow("point"));
@@ -1206,6 +1335,10 @@
       $("span").value = "20";
       $("material").value = "steel";
       $("steel-section").value = "W12x26";
+      $("steel-depth").value = "12.22";
+      $("steel-flange-width").value = "6.49";
+      $("steel-web-thickness").value = "0.23";
+      $("steel-flange-thickness").value = "0.38";
       $("steel-weight").value = "26";
       $("steel-e").value = "29000";
       $("steel-ix").value = "204";
@@ -1214,7 +1347,7 @@
       $("steel-allowable").value = "";
       $("steel-source").value = "Example benchmark values — verify against a section table";
       $("steel-source").placeholder = "";
-      $("steel-section-help").textContent = "Curated common sizes. Selecting a shape does not load its table properties; enter verified values and source below.";
+      $("steel-section-help").textContent = "Selecting a shape does not load table properties; enter verified dimensions, section properties, and source.";
       $("include-self-weight").checked = false;
       $("deflection-limit").value = "360";
       $("point-loads").replaceChildren();
