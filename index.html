@@ -1,0 +1,1243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f8">
+  <title>Beam Designer</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172b3a;
+      --muted: #647583;
+      --line: #dce3e8;
+      --paper: #ffffff;
+      --canvas: #f4f6f8;
+      --blue: #176b87;
+      --blue-dark: #10546d;
+      --blue-pale: #e8f4f7;
+      --gold: #a76b13;
+      --gold-pale: #fff6e6;
+      --green: #23734e;
+      --green-pale: #e9f5ee;
+      --red: #a23d3d;
+      --red-pale: #fff0ee;
+      --shadow: 0 10px 28px rgba(20, 42, 56, 0.06);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .topbar {
+      background: #102b3a;
+      color: #fff;
+      padding: 18px max(24px, calc((100% - 1440px) / 2));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 10px;
+      color: #9bd4e4;
+      font-weight: 800;
+      font-size: 19px;
+    }
+    .brand h1 { margin: 0; font-size: 17px; line-height: 1.2; letter-spacing: -.02em; }
+    .brand p { margin: 3px 0 0; color: #bdcbd2; font-size: 12px; }
+    .topbar-tag {
+      color: #d6e5eb;
+      font-size: 12px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 999px;
+      padding: 6px 11px;
+      white-space: nowrap;
+    }
+
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 26px 24px 48px;
+    }
+
+    .intro {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 20px;
+      margin: 0 0 20px;
+    }
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--blue);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: .12em;
+      font-weight: 800;
+    }
+    .intro h2 { margin: 0; font-size: clamp(24px, 3vw, 32px); letter-spacing: -.04em; }
+    .intro p:last-child { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(310px, 390px) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel, .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .controls { overflow: hidden; }
+    .controls-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .controls-header h3 { margin: 0; font-size: 16px; }
+    .controls-header p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .controls-body { padding: 16px 20px 20px; }
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 18px 0 10px;
+    }
+    .section-heading:first-child { margin-top: 0; }
+    .section-heading h4 { margin: 0; font-size: 13px; }
+    .section-note { color: var(--muted); font-size: 11px; }
+
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .field { min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    .field label, .field-label {
+      display: block;
+      margin: 0 0 5px;
+      color: #415564;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .field input, .field select, .load-field input {
+      width: 100%;
+      min-width: 0;
+      height: 38px;
+      padding: 7px 10px;
+      border: 1px solid #cbd6dd;
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      font-size: 13px;
+    }
+    .field input:focus, .field select:focus, .load-field input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(23,107,135,.13);
+    }
+    .field input::placeholder, .load-field input::placeholder { color: #9aa8b1; }
+    .unit-input { position: relative; }
+    .unit-input input { padding-right: 54px; }
+    .unit {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 10px;
+      pointer-events: none;
+    }
+    .helper { margin: 5px 0 0; color: var(--muted); font-size: 10px; }
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      color: #425765;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .check-row input { margin: 2px 0 0; accent-color: var(--blue); }
+    .subpanel {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #fbfcfd;
+    }
+    .field-group[hidden] { display: none; }
+
+    .load-list { display: grid; gap: 8px; }
+    .load-row {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #fbfcfd;
+    }
+    .load-row-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .load-row-title { font-size: 11px; font-weight: 750; color: #344a59; }
+    .load-row-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .load-field label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 650;
+    }
+    .load-field input { height: 34px; padding: 6px 8px; font-size: 12px; }
+    .icon-button, .text-button {
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 750;
+    }
+    .icon-button { color: #8a4c4c; padding: 3px 5px; }
+    .load-actions { display: flex; gap: 14px; margin-top: 9px; }
+    .empty-loads {
+      margin: 0;
+      padding: 12px;
+      border: 1px dashed #cbd6dd;
+      border-radius: 8px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+    }
+
+    .action-row { display: flex; gap: 10px; margin-top: 18px; }
+    .primary-button {
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      min-height: 42px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 750;
+      transition: background .15s, transform .15s;
+    }
+    .primary-button:hover { background: var(--blue-dark); }
+    .primary-button:active { transform: translateY(1px); }
+    .secondary-button {
+      border: 1px solid #cbd6dd;
+      border-radius: 8px;
+      background: #fff;
+      color: #425765;
+      min-height: 42px;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .error-message {
+      display: none;
+      margin: 14px 0 0;
+      padding: 10px 12px;
+      border: 1px solid #ebc8c4;
+      border-radius: 8px;
+      background: var(--red-pale);
+      color: #833a35;
+      font-size: 12px;
+    }
+    .error-message.visible { display: block; }
+
+    .results { min-width: 0; display: grid; gap: 14px; }
+    .notice {
+      padding: 12px 15px;
+      border: 1px solid #ead6ac;
+      border-radius: 10px;
+      background: var(--gold-pale);
+      color: #72531c;
+      font-size: 12px;
+    }
+    .notice strong { color: #5f4414; }
+    .result-card { padding: 17px 19px; }
+    .card-heading {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .card-heading h3 { margin: 0; font-size: 14px; }
+    .card-heading p { margin: 3px 0 0; color: var(--muted); font-size: 11px; }
+    .card-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: var(--blue-pale);
+      color: var(--blue-dark);
+      padding: 4px 9px;
+      font-size: 10px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+    .beam-svg, .plot-svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .beam-svg text, .plot-svg text { font-family: inherit; }
+    .beam-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 7px; color: var(--muted); font-size: 10px; }
+    .legend-mark { display: inline-flex; align-items: center; gap: 5px; }
+    .legend-line { width: 15px; height: 2px; background: #334d5d; }
+    .legend-load { width: 15px; height: 2px; background: #a94e16; }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .metric {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #fff;
+      min-width: 0;
+    }
+    .metric-label { color: var(--muted); font-size: 10px; font-weight: 700; }
+    .metric-value { margin-top: 5px; font-size: clamp(15px, 2vw, 21px); font-weight: 760; letter-spacing: -.03em; overflow-wrap: anywhere; }
+    .metric-detail { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 11px; }
+    .check-card {
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .check-title { font-size: 11px; font-weight: 750; }
+    .check-detail { margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .status {
+      flex: 0 0 auto;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .status.pass { background: var(--green-pale); color: var(--green); }
+    .status.fail { background: var(--red-pale); color: var(--red); }
+    .status.na { background: #edf1f3; color: #5e6d76; }
+    .result-detail {
+      border-top: 1px solid var(--line);
+      margin-top: 13px;
+      padding-top: 11px;
+      color: #526674;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+    .diagram-stack { display: grid; gap: 16px; }
+    .diagram-item + .diagram-item { border-top: 1px solid var(--line); padding-top: 13px; }
+    .diagram-title { margin: 0 0 2px; color: #334a59; font-size: 11px; font-weight: 750; }
+    .diagram-subtitle { margin: 0 0 4px; color: var(--muted); font-size: 10px; }
+    .property-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .property {
+      padding: 8px 10px;
+      border-radius: 7px;
+      background: #f5f8f9;
+      min-width: 0;
+    }
+    .property-label { color: var(--muted); font-size: 9px; }
+    .property-value { margin-top: 2px; font-size: 11px; font-weight: 700; overflow-wrap: anywhere; }
+    .caveat-list { margin: 8px 0 0; padding-left: 17px; color: var(--muted); font-size: 10px; }
+    .caveat-list li + li { margin-top: 3px; }
+    .footer-note { color: #71818b; text-align: center; font-size: 10px; padding: 4px 0; }
+
+    @media (max-width: 980px) {
+      .workspace { grid-template-columns: minmax(290px, 350px) minmax(0, 1fr); gap: 14px; }
+      .page { padding-inline: 16px; }
+      .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .workspace { grid-template-columns: 1fr; }
+      .controls { order: 0; }
+      .results { order: 1; }
+      .intro { align-items: start; flex-direction: column; }
+      .property-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 440px) {
+      .topbar { padding: 14px 16px; }
+      .topbar-tag { display: none; }
+      .page { padding: 20px 12px 34px; }
+      .controls-body { padding-inline: 14px; }
+      .result-card { padding: 14px; }
+      .check-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">B</div>
+      <div>
+        <h1>Beam Designer</h1>
+        <p>Elastic beam analysis · Imperial units</p>
+      </div>
+    </div>
+    <div class="topbar-tag">Educational screening tool</div>
+  </header>
+
+  <main class="page">
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Beam analysis workspace</p>
+        <h2 id="page-title">Model your beam</h2>
+        <p>Set the supports, member properties, and loads to view reactions and diagrams.</p>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <form class="panel controls" id="beam-form" novalidate>
+        <div class="controls-header">
+          <h3>Beam inputs</h3>
+          <p>Positive loads act downward; properties must use the displayed units.</p>
+        </div>
+        <div class="controls-body">
+          <div class="section-heading"><h4>Geometry &amp; supports</h4></div>
+          <div class="field-grid">
+            <div class="field">
+              <label for="support">Support condition</label>
+              <select id="support">
+                <option value="simple">Simply supported</option>
+                <option value="cantilever">Cantilever</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="span">Span</label>
+              <div class="unit-input"><input id="span" type="number" min="0.01" step="any" value="20"><span class="unit">ft</span></div>
+            </div>
+          </div>
+
+          <div class="section-heading"><h4>Member</h4></div>
+          <div class="field-grid">
+            <div class="field full">
+              <label for="material">Material / section type</label>
+              <select id="material">
+                <option value="steel">Steel W-shape</option>
+                <option value="lumber">Rectangular lumber</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="subpanel field-group" id="steel-fields">
+            <div class="field-grid">
+              <div class="field full">
+                <label for="steel-section">Section identifier</label>
+                <select id="steel-section">
+                  <option>W8x10</option>
+                  <option>W8x13</option>
+                  <option>W8x18</option>
+                  <option>W10x12</option>
+                  <option>W10x15</option>
+                  <option>W10x22</option>
+                  <option>W12x14</option>
+                  <option>W12x19</option>
+                  <option selected>W12x26</option>
+                  <option>W12x35</option>
+                  <option>W14x22</option>
+                  <option>W14x30</option>
+                  <option>W14x38</option>
+                  <option>W16x26</option>
+                  <option>W16x36</option>
+                  <option>W18x35</option>
+                  <option>W18x50</option>
+                  <option>W21x44</option>
+                  <option>W24x55</option>
+                  <option>W24x76</option>
+                </select>
+                <p class="helper" id="steel-section-help">Curated common sizes. Selecting a shape does not load its table properties; enter verified values and source below.</p>
+              </div>
+              <div class="field">
+                <label for="steel-weight">Weight per length</label>
+                <div class="unit-input"><input id="steel-weight" type="number" min="0" step="any" value="26"><span class="unit">lb/ft</span></div>
+              </div>
+              <div class="field">
+                <label for="steel-e">Elastic modulus, E</label>
+                <div class="unit-input"><input id="steel-e" type="number" min="0" step="any" value="29000"><span class="unit">ksi</span></div>
+              </div>
+              <div class="field">
+                <label for="steel-ix">Strong-axis Ix</label>
+                <div class="unit-input"><input id="steel-ix" type="number" min="0" step="any" value="204"><span class="unit">in⁴</span></div>
+              </div>
+              <div class="field">
+                <label for="steel-sx">Elastic section modulus, Sx</label>
+                <div class="unit-input"><input id="steel-sx" type="number" min="0" step="any" value="33.4"><span class="unit">in³</span></div>
+              </div>
+              <div class="field">
+                <label for="steel-fy">Yield strength, Fy</label>
+                <div class="unit-input"><input id="steel-fy" type="number" min="0" step="any" value="50"><span class="unit">ksi</span></div>
+              </div>
+              <div class="field">
+                <label for="steel-allowable">Allowable bending stress</label>
+                <div class="unit-input"><input id="steel-allowable" type="number" min="0" step="any" placeholder="Optional"><span class="unit">ksi</span></div>
+              </div>
+              <div class="field full">
+                <label for="steel-source">Property source</label>
+                <input id="steel-source" type="text" value="Example benchmark values — verify against a section table">
+              </div>
+            </div>
+          </div>
+
+          <div class="subpanel field-group" id="lumber-fields" hidden>
+            <div class="field-grid">
+              <div class="field full">
+                <label for="lumber-grade">Species and grade</label>
+                <input id="lumber-grade" type="text" placeholder="For example, species and grade">
+              </div>
+              <div class="field">
+                <label for="lumber-b">Actual width, b</label>
+                <div class="unit-input"><input id="lumber-b" type="number" min="0" step="any" placeholder="e.g. 1.5"><span class="unit">in</span></div>
+              </div>
+              <div class="field">
+                <label for="lumber-d">Actual depth, d</label>
+                <div class="unit-input"><input id="lumber-d" type="number" min="0" step="any" placeholder="e.g. 5.5"><span class="unit">in</span></div>
+              </div>
+              <div class="field">
+                <label for="lumber-e">Elastic modulus, E</label>
+                <div class="unit-input"><input id="lumber-e" type="number" min="0" step="any" placeholder="ksi"><span class="unit">ksi</span></div>
+              </div>
+              <div class="field">
+                <label for="lumber-weight">Weight per length</label>
+                <div class="unit-input"><input id="lumber-weight" type="number" min="0" step="any" placeholder="lb/ft"><span class="unit">lb/ft</span></div>
+              </div>
+              <div class="field">
+                <label for="lumber-fb">Bending value, Fb</label>
+                <div class="unit-input"><input id="lumber-fb" type="number" min="0" step="any" placeholder="ksi"><span class="unit">ksi</span></div>
+              </div>
+              <div class="field">
+                <label for="lumber-fv">Shear value, Fv</label>
+                <div class="unit-input"><input id="lumber-fv" type="number" min="0" step="any" placeholder="ksi"><span class="unit">ksi</span></div>
+              </div>
+              <div class="field full">
+                <label for="lumber-source">Property source</label>
+                <input id="lumber-source" type="text" placeholder="Source of lumber values">
+              </div>
+              <div class="field full">
+                <span class="field-label">Bending allowable</span>
+                <label class="check-row" for="lumber-fb-confirm">
+                  <input id="lumber-fb-confirm" type="checkbox">
+                  <span>I confirm Fb is already an allowable value, or I will enter its adjustment factors below.</span>
+                </label>
+              </div>
+              <div class="field full">
+                <div class="section-heading">
+                  <h4>Fb adjustment factors</h4>
+                  <span class="section-note">Enter only factors applicable to your basis.</span>
+                </div>
+                <div class="load-list" id="factor-list"></div>
+                <div class="load-actions"><button class="text-button" type="button" id="add-factor">+ Add factor</button></div>
+                <p class="helper">Effective Fb = entered Fb × product of factors. No code factors are assumed.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-heading">
+            <h4>Applied loads</h4>
+            <span class="section-note">Position from the left end (ft)</span>
+          </div>
+          <div class="load-list" id="point-loads" aria-label="Point loads"></div>
+          <div class="load-actions"><button class="text-button" type="button" id="add-point">+ Point load</button></div>
+          <div class="section-heading"><h4>Uniform distributed loads</h4></div>
+          <div class="load-list" id="distributed-loads" aria-label="Distributed loads"></div>
+          <div class="load-actions"><button class="text-button" type="button" id="add-distributed">+ Distributed load</button></div>
+
+          <div class="section-heading"><h4>Self-weight &amp; serviceability</h4></div>
+          <div class="subpanel">
+            <label class="check-row" for="include-self-weight">
+              <input id="include-self-weight" type="checkbox">
+              <span>Include member self-weight as a full-span uniform load.</span>
+            </label>
+          </div>
+          <div class="field-grid" style="margin-top: 10px">
+            <div class="field full">
+              <label for="deflection-limit">Deflection limit denominator</label>
+              <div class="unit-input"><input id="deflection-limit" type="number" min="1" step="any" value="360"><span class="unit">L / n</span></div>
+              <p class="helper">Default L/360; span is converted to inches for the comparison.</p>
+            </div>
+          </div>
+          <div class="action-row">
+            <button class="primary-button" type="submit">Analyze beam</button>
+            <button class="secondary-button" type="button" id="reset-example">Load example</button>
+          </div>
+          <p class="error-message" id="form-error" role="alert"></p>
+        </div>
+      </form>
+
+      <section class="results" aria-label="Analysis results">
+        <div class="notice">
+          <strong>Preliminary analysis only.</strong> Results use linear-elastic statics and are not a code-compliant design.
+          Buckling, shear strength, bearing, connections, load combinations, and other design checks are not performed.
+        </div>
+
+        <article class="card result-card">
+          <div class="card-heading">
+            <div>
+              <h3>Beam &amp; loading</h3>
+              <p id="beam-caption">Simply supported · 20 ft span · W12x26</p>
+            </div>
+            <span class="card-chip">Loads + downward</span>
+          </div>
+          <div id="beam-sketch" aria-label="Beam and applied loads"></div>
+          <div class="beam-legend">
+            <span class="legend-mark"><span class="legend-line"></span>Beam</span>
+            <span class="legend-mark"><span class="legend-load"></span>Applied load</span>
+          </div>
+        </article>
+
+        <article class="card result-card">
+          <div class="card-heading">
+            <div><h3>Analysis summary</h3><p>Reactions and sampled extrema</p></div>
+            <span class="card-chip" id="summary-chip">Ready</span>
+          </div>
+          <div class="metric-grid" id="reaction-metrics"></div>
+          <div class="metric-grid" id="extreme-metrics" style="margin-top: 10px"></div>
+          <div class="check-grid" id="checks"></div>
+          <div class="result-detail" id="assumptions"></div>
+        </article>
+
+        <article class="card result-card">
+          <div class="card-heading">
+            <div><h3>Response diagrams</h3><p>Positive shear and moment follow the plotted sign convention; deflection is positive downward.</p></div>
+          </div>
+          <div class="diagram-stack">
+            <div class="diagram-item">
+              <p class="diagram-title">Shear force</p>
+              <p class="diagram-subtitle">V (kip)</p>
+              <div id="shear-plot"></div>
+            </div>
+            <div class="diagram-item">
+              <p class="diagram-title">Bending moment</p>
+              <p class="diagram-subtitle">M (kip-ft)</p>
+              <div id="moment-plot"></div>
+            </div>
+            <div class="diagram-item">
+              <p class="diagram-title">Deflection</p>
+              <p class="diagram-subtitle">Downward positive (in)</p>
+              <div id="deflection-plot"></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card result-card">
+          <div class="card-heading">
+            <div><h3>Properties used</h3><p>Review section/material values and source before relying on results.</p></div>
+          </div>
+          <div class="property-grid" id="properties"></div>
+          <ul class="caveat-list">
+            <li>Linear-elastic analysis assumes a prismatic member with constant stiffness and small deflection.</li>
+            <li>No shear-strength, buckling, lateral-bracing, local-buckling, bearing, connection, or load-combination check is made.</li>
+            <li>Use appropriate project-specific material values and applicable design requirements; this tool does not certify structural safety.</li>
+          </ul>
+        </article>
+        <p class="footer-note">Use engineering judgment and independent review for real structures.</p>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    "use strict";
+
+    const $ = (id) => document.getElementById(id);
+    const formError = $("form-error");
+    let pointLoadCount = 0;
+    let distributedLoadCount = 0;
+    let factorCount = 0;
+
+    function makeLoadRow(type, values) {
+      const isPoint = type === "point";
+      const list = $(isPoint ? "point-loads" : "distributed-loads");
+      const row = document.createElement("div");
+      row.className = "load-row";
+      row.dataset.type = type;
+      const number = isPoint ? ++pointLoadCount : ++distributedLoadCount;
+      row.dataset.number = String(number);
+
+      const top = document.createElement("div");
+      top.className = "load-row-top";
+      const title = document.createElement("span");
+      title.className = "load-row-title";
+      title.textContent = isPoint ? `Point load ${number}` : `Distributed load ${number}`;
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "icon-button";
+      remove.textContent = "Remove";
+      remove.setAttribute("aria-label", `Remove ${title.textContent.toLowerCase()}`);
+      remove.addEventListener("click", () => {
+        row.remove();
+        updateEmptyLoadMessages();
+      });
+      top.append(title, remove);
+
+      const fields = document.createElement("div");
+      fields.className = "load-row-fields";
+      const definitions = isPoint
+        ? [
+            { key: "value", label: "Load (+ down)", unit: "kip", value: values && values.value },
+            { key: "position", label: "Position", unit: "ft", value: values && values.position }
+          ]
+        : [
+            { key: "value", label: "Load (+ down)", unit: "kip/ft", value: values && values.value },
+            { key: "start", label: "Start", unit: "ft", value: values && values.start },
+            { key: "end", label: "End", unit: "ft", value: values && values.end }
+          ];
+      for (const definition of definitions) {
+        const field = document.createElement("div");
+        field.className = "load-field";
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        const inputId = `${type}-${number}-${definition.key}`;
+        label.htmlFor = inputId;
+        label.textContent = `${definition.label} (${definition.unit})`;
+        input.id = inputId;
+        input.type = "number";
+        input.step = "any";
+        input.dataset.key = definition.key;
+        input.value = definition.value === undefined ? "" : String(definition.value);
+        input.setAttribute("aria-label", `${title.textContent}: ${definition.label} in ${definition.unit}`);
+        field.append(label, input);
+        fields.append(field);
+      }
+      row.append(top, fields);
+      list.append(row);
+      updateEmptyLoadMessages();
+    }
+
+    function makeFactorRow(labelValue, factorValue) {
+      const row = document.createElement("div");
+      row.className = "load-row factor-row";
+      const top = document.createElement("div");
+      top.className = "load-row-top";
+      const title = document.createElement("span");
+      title.className = "load-row-title";
+      title.textContent = "Adjustment factor";
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "icon-button";
+      remove.textContent = "Remove";
+      remove.setAttribute("aria-label", "Remove adjustment factor");
+      remove.addEventListener("click", () => row.remove());
+      top.append(title, remove);
+      const fields = document.createElement("div");
+      fields.className = "load-row-fields";
+      for (const definition of [
+        { key: "name", label: "Factor name", value: labelValue },
+        { key: "value", label: "Factor value", value: factorValue }
+      ]) {
+        const field = document.createElement("div");
+        field.className = "load-field";
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        const inputId = `factor-${++factorCount}-${definition.key}`;
+        label.htmlFor = inputId;
+        label.textContent = definition.label;
+        input.id = inputId;
+        input.dataset.key = definition.key;
+        input.type = definition.key === "value" ? "number" : "text";
+        if (definition.key === "value") input.step = "any";
+        input.value = definition.value === undefined ? "" : String(definition.value);
+        field.append(label, input);
+        fields.append(field);
+      }
+      row.append(top, fields);
+      $("factor-list").append(row);
+    }
+
+    function updateEmptyLoadMessages() {
+      for (const id of ["point-loads", "distributed-loads"]) {
+        const list = $(id);
+        const existing = list.querySelector(".empty-loads");
+        const hasRows = list.querySelector(".load-row");
+        if (!hasRows && !existing) {
+          const empty = document.createElement("p");
+          empty.className = "empty-loads";
+          empty.textContent = "No loads added.";
+          list.append(empty);
+        } else if (hasRows && existing) {
+          existing.remove();
+        }
+      }
+    }
+
+    function setError(message) {
+      formError.textContent = message;
+      formError.classList.toggle("visible", Boolean(message));
+      if (message) formError.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    function readPositive(id, label, optional) {
+      const raw = $(id).value.trim();
+      if (optional && raw === "") return null;
+      const value = Number(raw);
+      if (!Number.isFinite(value) || value <= 0) throw new Error(`${label} must be a positive number.`);
+      return value;
+    }
+
+    function readNonnegative(id, label) {
+      const raw = $(id).value.trim();
+      const value = Number(raw);
+      if (raw === "" || !Number.isFinite(value) || value < 0) throw new Error(`${label} must be zero or greater.`);
+      return value;
+    }
+
+    function readText(id, label, optional) {
+      const value = $(id).value.trim();
+      if (!optional && !value) throw new Error(`${label} is required.`);
+      return value;
+    }
+
+    function collectLoads(spanFt) {
+      const points = [];
+      for (const row of $("point-loads").querySelectorAll(".load-row")) {
+        const values = {};
+        for (const input of row.querySelectorAll("input")) {
+          const raw = input.value.trim();
+          const value = Number(raw);
+          if (raw === "" || !Number.isFinite(value)) throw new Error(`Complete every field in point load ${row.dataset.number}.`);
+          values[input.dataset.key] = value;
+        }
+        if (values.position < 0 || values.position > spanFt) {
+          throw new Error(`Point load ${row.dataset.number} position must be between 0 and the span.`);
+        }
+        points.push({ p: values.value, a: values.position, label: `P${row.dataset.number}` });
+      }
+
+      const distributed = [];
+      for (const row of $("distributed-loads").querySelectorAll(".load-row")) {
+        const values = {};
+        for (const input of row.querySelectorAll("input")) {
+          const raw = input.value.trim();
+          const value = Number(raw);
+          if (raw === "" || !Number.isFinite(value)) throw new Error(`Complete every field in distributed load ${row.dataset.number}.`);
+          values[input.dataset.key] = value;
+        }
+        if (values.start < 0 || values.end > spanFt || values.start >= values.end) {
+          throw new Error(`Distributed load ${row.dataset.number} must have 0 ≤ start < end ≤ span.`);
+        }
+        distributed.push({ q: values.value, a: values.start, b: values.end, label: `w${row.dataset.number}` });
+      }
+      return { points, distributed };
+    }
+
+    function collectMember() {
+      const material = $("material").value;
+      if (material === "steel") {
+        const allowable = readPositive("steel-allowable", "Allowable bending stress", true);
+        return {
+          material,
+          name: readText("steel-section", "Section identifier", false),
+          weightLbFt: readNonnegative("steel-weight", "Steel weight per length"),
+          E: readPositive("steel-e", "Steel elastic modulus", false),
+          I: readPositive("steel-ix", "Steel Ix", false),
+          S: readPositive("steel-sx", "Steel Sx", false),
+          Fy: readPositive("steel-fy", "Steel Fy", false),
+          allowable,
+          source: readText("steel-source", "Steel property source", false),
+          details: [
+            ["Material", "Steel W-shape"],
+            ["Section", readText("steel-section", "Section identifier", false)],
+            ["E", `${format(readPositive("steel-e", "Steel elastic modulus", false))} ksi`],
+            ["Ix", `${format(readPositive("steel-ix", "Steel Ix", false))} in⁴`],
+            ["Sx", `${format(readPositive("steel-sx", "Steel Sx", false))} in³`],
+            ["Fy", `${format(readPositive("steel-fy", "Steel Fy", false))} ksi`],
+            ["Weight", `${format(readNonnegative("steel-weight", "Steel weight per length"))} lb/ft`],
+            ["Property source", readText("steel-source", "Steel property source", false)]
+          ]
+        };
+      }
+
+      const b = readPositive("lumber-b", "Lumber width b", false);
+      const d = readPositive("lumber-d", "Lumber depth d", false);
+      const E = readPositive("lumber-e", "Lumber elastic modulus", false);
+      const Fb = readPositive("lumber-fb", "Lumber Fb", false);
+      const Fv = readPositive("lumber-fv", "Lumber Fv", false);
+      const grade = readText("lumber-grade", "Lumber species and grade", false);
+      const source = readText("lumber-source", "Lumber property source", false);
+      let factorProduct = 1;
+      const factorNames = [];
+      for (const row of $("factor-list").querySelectorAll(".factor-row")) {
+        const name = row.querySelector('[data-key="name"]').value.trim();
+        const raw = row.querySelector('[data-key="value"]').value.trim();
+        const value = Number(raw);
+        if (!name || raw === "" || !Number.isFinite(value) || value <= 0) {
+          throw new Error("Each lumber adjustment factor needs a name and a positive value.");
+        }
+        factorProduct *= value;
+        factorNames.push(`${name} ${format(value)}`);
+      }
+      const confirmed = $("lumber-fb-confirm").checked;
+      const allowable = confirmed ? Fb * factorProduct : null;
+      const I = b * Math.pow(d, 3) / 12;
+      const S = b * Math.pow(d, 2) / 6;
+      return {
+        material,
+        name: grade,
+        weightLbFt: readNonnegative("lumber-weight", "Lumber weight per length"),
+        E, I, S, Fb, Fv, allowable, factorProduct,
+        source,
+        details: [
+          ["Material", "Rectangular lumber"],
+          ["Species / grade", grade],
+          ["Actual b × d", `${format(b)} × ${format(d)} in`],
+          ["E", `${format(E)} ksi`],
+          ["Ix = bd³/12", `${format(I)} in⁴`],
+          ["Sx = bd²/6", `${format(S)} in³`],
+          ["Fb × factors", `${format(Fb)} × ${format(factorProduct)} = ${format(Fb * factorProduct)} ksi`],
+          ["Fv (not checked)", `${format(Fv)} ksi`],
+          ["Weight", `${format(readNonnegative("lumber-weight", "Lumber weight per length"))} lb/ft`],
+          ["Adjustment factors", factorNames.length ? factorNames.join(", ") : "None entered"],
+          ["Property source", source]
+        ]
+      };
+    }
+
+    function format(value, digits) {
+      if (!Number.isFinite(value)) return "—";
+      const places = digits === undefined ? 3 : digits;
+      if (Math.abs(value) >= 1000000 || (Math.abs(value) > 0 && Math.abs(value) < 0.001)) {
+        return value.toExponential(2);
+      }
+      return Number(value.toFixed(places)).toLocaleString("en-US", { maximumFractionDigits: places });
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[character]);
+    }
+
+    function buildModel() {
+      const spanFt = readPositive("span", "Span", false);
+      const L = spanFt * 12;
+      const spanDenominator = readPositive("deflection-limit", "Deflection limit denominator", false);
+      const member = collectMember();
+      const support = $("support").value;
+      const loads = collectLoads(spanFt);
+      const points = loads.points.map((load) => ({ p: load.p, a: load.a * 12, label: load.label }));
+      const distributed = loads.distributed.map((load) => ({ q: load.q / 12, a: load.a * 12, b: load.b * 12, label: load.label }));
+      if ($("include-self-weight").checked && member.weightLbFt > 0) {
+        distributed.push({ q: member.weightLbFt / 1000 / 12, a: 0, b: L, label: "Self-weight" });
+      }
+      const totalLoad = points.reduce((sum, load) => sum + load.p, 0)
+        + distributed.reduce((sum, load) => sum + load.q * (load.b - load.a), 0);
+      const loadMoment = points.reduce((sum, load) => sum + load.p * load.a, 0)
+        + distributed.reduce((sum, load) => sum + load.q * (load.b * load.b - load.a * load.a) / 2, 0);
+      let leftReaction;
+      let rightReaction = 0;
+      let fixedReactionMoment = 0;
+      let momentConstant = 0;
+      if (support === "simple") {
+        rightReaction = loadMoment / L;
+        leftReaction = totalLoad - rightReaction;
+      } else {
+        leftReaction = totalLoad;
+        fixedReactionMoment = loadMoment;
+        momentConstant = -loadMoment;
+      }
+
+      const positivePart = (value) => Math.max(0, value);
+      function shearAt(x) {
+        let value = leftReaction;
+        for (const load of points) if (x >= load.a) value -= load.p;
+        for (const load of distributed) value -= load.q * Math.max(0, Math.min(x, load.b) - load.a);
+        return value;
+      }
+      function momentAt(x) {
+        let value = momentConstant + leftReaction * x;
+        for (const load of points) value -= load.p * positivePart(x - load.a);
+        for (const load of distributed) {
+          value -= load.q * (Math.pow(positivePart(x - load.a), 2) - Math.pow(positivePart(x - load.b), 2)) / 2;
+        }
+        return value;
+      }
+      function doubleMomentIntegral(x) {
+        let value = momentConstant * x * x / 2 + leftReaction * x * x * x / 6;
+        for (const load of points) value -= load.p * Math.pow(positivePart(x - load.a), 3) / 6;
+        for (const load of distributed) {
+          value -= load.q * (Math.pow(positivePart(x - load.a), 4) - Math.pow(positivePart(x - load.b), 4)) / 24;
+        }
+        return value;
+      }
+      const EI = member.E * member.I;
+      if (!Number.isFinite(EI) || EI <= 0 || !Number.isFinite(totalLoad) || !Number.isFinite(loadMoment)) {
+        throw new Error("The entered values are too large to analyze. Check the units and input magnitudes.");
+      }
+      const simpleSlopeOffset = support === "simple" ? doubleMomentIntegral(L) / (EI * L) : 0;
+      function deflectionAt(x) {
+        return -doubleMomentIntegral(x) / EI + simpleSlopeOffset * x;
+      }
+
+      const sampleCount = 1000;
+      const samples = [];
+      for (let index = 0; index <= sampleCount; index++) {
+        const x = L * index / sampleCount;
+        const sample = { x, V: shearAt(x), M: momentAt(x), y: deflectionAt(x) };
+        if (!Number.isFinite(sample.V) || !Number.isFinite(sample.M) || !Number.isFinite(sample.y)) {
+          throw new Error("The analysis produced a non-finite result. Check the entered values and units.");
+        }
+        samples.push(sample);
+      }
+      let maxMoment = samples[0];
+      let maxDeflection = samples[0];
+      let maxShear = samples[0];
+      for (const sample of samples) {
+        if (Math.abs(sample.M) > Math.abs(maxMoment.M)) maxMoment = sample;
+        if (Math.abs(sample.y) > Math.abs(maxDeflection.y)) maxDeflection = sample;
+        if (Math.abs(sample.V) > Math.abs(maxShear.V)) maxShear = sample;
+      }
+      return {
+        support, spanFt, L, spanDenominator, member, points, distributed, totalLoad,
+        leftReaction, rightReaction, fixedReactionMoment, shearAt, momentAt, deflectionAt,
+        samples, maxMoment, maxDeflection, maxShear
+      };
+    }
+
+    function svgText(x, y, text, anchor, size, fill) {
+      return `<text x="${x}" y="${y}" text-anchor="${anchor || "start"}" font-size="${size || 10}" fill="${fill || "#667985"}">${text}</text>`;
+    }
+
+    function drawBeam(model) {
+      const width = 760;
+      const height = 150;
+      const left = 44;
+      const right = 716;
+      const beamY = 91;
+      const span = model.L;
+      const xPosition = (x) => left + (right - left) * x / span;
+      let svg = `<svg class="beam-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Beam with supports and applied loads">`;
+      svg += `<defs><marker id="beam-arrow" viewBox="0 0 10 10" markerWidth="6" markerHeight="6" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 z" fill="#a94e16"/></marker></defs>`;
+      svg += `<line x1="${left}" y1="${beamY}" x2="${right}" y2="${beamY}" stroke="#28485b" stroke-width="7" stroke-linecap="round"/>`;
+      if (model.support === "simple") {
+        for (const x of [left, right]) {
+          svg += `<path d="M${x} ${beamY + 5} l-13 18 h26 z" fill="#edf3f5" stroke="#607986" stroke-width="1.5"/>`;
+          svg += `<line x1="${x - 18}" y1="${beamY + 25}" x2="${x + 18}" y2="${beamY + 25}" stroke="#78909b" stroke-width="1.5"/>`;
+        }
+      } else {
+        svg += `<line x1="${left - 10}" y1="49" x2="${left - 10}" y2="125" stroke="#607986" stroke-width="5"/>`;
+        for (let y = 52; y < 123; y += 10) svg += `<line x1="${left - 10}" y1="${y}" x2="${left - 20}" y2="${y + 8}" stroke="#9aabb3" stroke-width="1"/>`;
+      }
+      const allLoads = model.distributed.length + model.points.length;
+      if (!allLoads) svg += svgText((left + right) / 2, 53, "No applied loads", "middle", 11);
+      for (const load of model.distributed) {
+        const x1 = xPosition(load.a);
+        const x2 = xPosition(load.b);
+        const sign = load.q >= 0 ? 1 : -1;
+        const startY = sign > 0 ? 35 : 132;
+        const endY = sign > 0 ? beamY - 5 : beamY + 5;
+        svg += `<path d="M${x1} ${startY} L${x2} ${startY} L${x2} ${endY} L${x1} ${endY} Z" fill="#fbe8d5" stroke="none"/>`;
+        svg += `<line x1="${x1}" y1="${startY}" x2="${x2}" y2="${startY}" stroke="#a94e16" stroke-width="1.5"/>`;
+        const count = 5;
+        for (let index = 0; index <= count; index++) {
+          const x = x1 + (x2 - x1) * index / count;
+          svg += `<line x1="${x}" y1="${startY + sign * 3}" x2="${x}" y2="${endY}" stroke="#a94e16" stroke-width="1.8" marker-end="url(#beam-arrow)"/>`;
+        }
+        svg += svgText((x1 + x2) / 2, sign > 0 ? 25 : 145, `${load.label}: ${format(load.q * 12)} kip/ft`, "middle", 9, "#a95c20");
+      }
+      for (const load of model.points) {
+        const x = xPosition(load.a);
+        const sign = load.p >= 0 ? 1 : -1;
+        const startY = sign > 0 ? 39 : 132;
+        const endY = sign > 0 ? beamY - 5 : beamY + 5;
+        const marker = sign > 0 ? ' marker-end="url(#beam-arrow)"' : "";
+        svg += `<line x1="${x}" y1="${startY}" x2="${x}" y2="${endY}" stroke="#c26b24" stroke-width="2"${marker}/>`;
+        if (sign < 0) svg += `<path d="M${x - 4} ${endY - 7} L${x} ${endY} L${x + 4} ${endY - 7}" fill="none" stroke="#c26b24" stroke-width="2"/>`;
+        svg += svgText(x, sign > 0 ? 29 : 145, `${load.label}: ${format(load.p)} kip`, "middle", 9, "#a95c20");
+      }
+      svg += svgText(left, 142, "x = 0", "start", 9);
+      svg += svgText(right, 142, `L = ${format(model.spanFt)} ft`, "end", 9);
+      svg += `</svg>`;
+      $("beam-sketch").innerHTML = svg;
+      $("beam-caption").textContent = `${model.support === "simple" ? "Simply supported" : "Cantilever"} · ${format(model.spanFt)} ft span · ${model.member.name}`;
+    }
+
+    function drawPlot(targetId, model, key, label, conversion) {
+      const width = 760;
+      const height = 190;
+      const left = 56;
+      const right = 728;
+      const top = 20;
+      const bottom = 153;
+      const values = model.samples.map((sample) => sample[key] * conversion);
+      let min = Math.min(0, ...values);
+      let max = Math.max(0, ...values);
+      if (Math.abs(max - min) < 1e-12) { min = -1; max = 1; }
+      const pad = (max - min) * .12;
+      min -= pad;
+      max += pad;
+      const y = (value) => bottom - (value - min) * (bottom - top) / (max - min);
+      const x = (distance) => left + (right - left) * distance / model.L;
+      const path = model.samples.map((sample, index) => `${index ? "L" : "M"}${x(sample.x).toFixed(2)},${y(sample[key] * conversion).toFixed(2)}`).join(" ");
+      const zeroY = y(0);
+      let svg = `<svg class="plot-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${label} diagram">`;
+      svg += `<line x1="${left}" y1="${top}" x2="${left}" y2="${bottom}" stroke="#cdd7dc"/>`;
+      svg += `<line x1="${left}" y1="${zeroY}" x2="${right}" y2="${zeroY}" stroke="#aab9c1" stroke-dasharray="4 4"/>`;
+      svg += `<line x1="${left}" y1="${bottom}" x2="${right}" y2="${bottom}" stroke="#cdd7dc"/>`;
+      svg += `<path d="${path}" fill="none" stroke="#176b87" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+      svg += svgText(left - 8, top + 3, format(max - pad, 2), "end", 9);
+      svg += svgText(left - 8, bottom + 2, format(min + pad, 2), "end", 9);
+      svg += svgText(left, bottom + 19, "0", "middle", 9);
+      svg += svgText(right, bottom + 19, `${format(model.spanFt)} ft`, "middle", 9);
+      svg += svgText((left + right) / 2, height - 3, "Position along beam", "middle", 9);
+      svg += `</svg>`;
+      $(targetId).innerHTML = svg;
+    }
+
+    function metric(label, value, detail) {
+      return `<div class="metric"><div class="metric-label">${label}</div><div class="metric-value">${value}</div><div class="metric-detail">${detail}</div></div>`;
+    }
+
+    function checkCard(title, detail, status, statusText) {
+      return `<div class="check-card"><div><div class="check-title">${title}</div><div class="check-detail">${detail}</div></div><span class="status ${status}">${statusText}</span></div>`;
+    }
+
+    function updateResults(model) {
+      const isSimple = model.support === "simple";
+      const reactionHtml = isSimple
+        ? metric("Left reaction", `${format(model.leftReaction)} kip`, "Upward positive")
+          + metric("Right reaction", `${format(model.rightReaction)} kip`, "Upward positive")
+          + metric("Total applied load", `${format(model.totalLoad)} kip`, "Downward positive")
+          + metric("Support condition", "2 supports", "Pinned / roller idealization")
+        : metric("Fixed reaction", `${format(model.leftReaction)} kip`, "Upward positive")
+          + metric("Fixed-end reaction moment", `${format(model.fixedReactionMoment / 12)} kip-ft`, "Counterclockwise positive")
+          + metric("Total applied load", `${format(model.totalLoad)} kip`, "Downward positive")
+          + metric("Support condition", "Fixed end", "At x = 0");
+      $("reaction-metrics").innerHTML = reactionHtml;
+      $("extreme-metrics").innerHTML =
+        metric("Maximum |V|", `${format(Math.abs(model.maxShear.V))} kip`, `Near ${format(model.maxShear.x / 12)} ft`)
+        + metric("Maximum |M|", `${format(Math.abs(model.maxMoment.M / 12))} kip-ft`, `Near ${format(model.maxMoment.x / 12)} ft`)
+        + metric("Maximum |fb|", `${format(Math.abs(model.maxMoment.M / model.member.S))} ksi`, "Elastic stress = |M| / Sx")
+        + metric("Maximum |deflection|", `${format(Math.abs(model.maxDeflection.y))} in`, `Near ${format(model.maxDeflection.x / 12)} ft`);
+
+      const stress = Math.abs(model.maxMoment.M / model.member.S);
+      const bending = model.member.allowable;
+      const bendingStatus = bending === null ? "na" : stress <= bending ? "pass" : "fail";
+      const bendingText = bending === null ? "NOT CHECKED" : stress <= bending ? "PASS" : "FAIL";
+      const bendingDetail = bending === null
+        ? "Provide an explicit allowable bending stress to compare."
+        : `${format(stress)} ksi / ${format(bending)} ksi allowable`;
+      const deflectionLimit = model.L / model.spanDenominator;
+      const deflectionPass = Math.abs(model.maxDeflection.y) <= deflectionLimit;
+      $("checks").innerHTML =
+        checkCard("Bending screening", bendingDetail, bendingStatus, bendingText)
+        + checkCard("Deflection", `${format(Math.abs(model.maxDeflection.y))} in / ${format(deflectionLimit)} in (L/${format(model.spanDenominator)})`, deflectionPass ? "pass" : "fail", deflectionPass ? "PASS" : "FAIL");
+
+      const loadWeight = model.distributed.find((load) => load.label === "Self-weight");
+      const loadDescription = $("include-self-weight").checked
+        ? `Self-weight included at ${format(loadWeight ? loadWeight.q * 12000 : 0)} lb/ft`
+        : "Self-weight excluded";
+      const factorWarning = model.member.material === "lumber" && model.member.allowable !== null && model.member.factorProduct === 1
+        ? " Confirm that entered Fb already reflects the intended allowable basis."
+        : "";
+      $("assumptions").textContent =
+        `${loadDescription}. Applied point and distributed loads are treated as service-level inputs; no load combinations or load factors are applied. ` +
+        `Deflection is positive downward. ${model.member.material === "lumber" ? "Lumber Fv is recorded but not checked." : "Fy is shown as an input but is not used to infer allowable strength."}` +
+        factorWarning;
+
+      $("properties").innerHTML = model.member.details.map(([name, value]) =>
+        `<div class="property"><div class="property-label">${escapeHTML(name)}</div><div class="property-value">${escapeHTML(value)}</div></div>`
+      ).join("");
+      $("summary-chip").textContent = bending === null
+        ? (deflectionPass ? "Deflection pass · bending unchecked" : "Deflection fail · bending unchecked")
+        : (deflectionPass && stress <= bending ? "Screening checks pass" : "Review checks");
+      drawBeam(model);
+      drawPlot("shear-plot", model, "V", "Shear force", 1);
+      drawPlot("moment-plot", model, "M", "Bending moment", 1 / 12);
+      drawPlot("deflection-plot", model, "y", "Deflection", 1);
+    }
+
+    function analyze(event) {
+      if (event) event.preventDefault();
+      setError("");
+      try {
+        const model = buildModel();
+        updateResults(model);
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "The beam could not be analyzed.");
+      }
+    }
+
+    function setMaterialFields() {
+      const steelSelected = $("material").value === "steel";
+      $("steel-fields").hidden = !steelSelected;
+      $("lumber-fields").hidden = steelSelected;
+    }
+
+    $("material").addEventListener("change", setMaterialFields);
+    $("steel-section").addEventListener("change", () => {
+      $("steel-weight").value = "";
+      $("steel-ix").value = "";
+      $("steel-sx").value = "";
+      $("steel-allowable").value = "";
+      $("steel-source").value = "";
+      $("steel-source").placeholder = "Enter the verified property source";
+      $("steel-section-help").textContent = "Section changed. Enter verified weight, Ix, Sx, allowable stress (if used), and source before analyzing.";
+    });
+    $("beam-form").addEventListener("submit", analyze);
+    $("add-point").addEventListener("click", () => makeLoadRow("point"));
+    $("add-distributed").addEventListener("click", () => makeLoadRow("distributed"));
+    $("add-factor").addEventListener("click", () => makeFactorRow("", ""));
+    $("reset-example").addEventListener("click", () => {
+      $("support").value = "simple";
+      $("span").value = "20";
+      $("material").value = "steel";
+      $("steel-section").value = "W12x26";
+      $("steel-weight").value = "26";
+      $("steel-e").value = "29000";
+      $("steel-ix").value = "204";
+      $("steel-sx").value = "33.4";
+      $("steel-fy").value = "50";
+      $("steel-allowable").value = "";
+      $("steel-source").value = "Example benchmark values — verify against a section table";
+      $("steel-source").placeholder = "";
+      $("steel-section-help").textContent = "Curated common sizes. Selecting a shape does not load its table properties; enter verified values and source below.";
+      $("include-self-weight").checked = false;
+      $("deflection-limit").value = "360";
+      $("point-loads").replaceChildren();
+      $("distributed-loads").replaceChildren();
+      $("factor-list").replaceChildren();
+      pointLoadCount = 0;
+      distributedLoadCount = 0;
+      factorCount = 0;
+      makeDistributedExample();
+      $("lumber-fb-confirm").checked = false;
+      setMaterialFields();
+      setError("");
+      analyze();
+    });
+
+    function makeDistributedExample() {
+      makeLoadRow("distributed", { value: 1, start: 0, end: 20 });
+    }
+
+    updateEmptyLoadMessages();
+    makeDistributedExample();
+    setMaterialFields();
+    analyze();
+  </script>
+</body>
+</html>
